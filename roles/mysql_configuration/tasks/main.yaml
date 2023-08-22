@@ -15,7 +15,8 @@
       mysql_user:
         name: root
         password: "{{ mysql_root_password }}"
-        host: '172.31.11.77'
+        host: "{{ ansible_play_hosts  }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
       when: dir_exists.stat.exists == False
 
     - name: Removes all anonymous user accounts
@@ -52,8 +53,8 @@
       mysql_user:
         config_file: "/etc/mysql/my.cnf"
         name: root
-        password: "{{mysql_root_password}}"
-        priv: '{{mysql_db}}.*:ALL'
+        password: "{{ mysql_root_password }}"
+        priv: '{{ mysql_db }}.*:ALL'
         state: present
       when: dir_exists.stat.exists == False
 
