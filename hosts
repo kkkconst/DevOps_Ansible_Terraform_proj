@@ -1,0 +1,7 @@
+[nodes]
+worker2 ansible_host=172.31.11.77
+worker1 ansible_host=172.31.15.252
+
+[ALL_SERVERS:children]
+nodes
+

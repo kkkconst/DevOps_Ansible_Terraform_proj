@@ -1,0 +1,12 @@
+---
+### Install LAMP Packages
+    - name: Install LAMP Packages
+      apt: name={{ item }}  state=latest
+      with_items:
+        - apache2
+        - mysql-server
+        - python3-pymysql
+        - php
+        - php-mysql
+        - libapache2-mod-php
+

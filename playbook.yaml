@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+
+  roles:
+    - install_lamp_packages
+    - apache_configuration
+    - mysql_configuration
+    - php_configuration
+    - wordpress_download_configuration    
+
+################# Handlers
+
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
