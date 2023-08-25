@@ -10,14 +10,43 @@
         var: mysql_root_password
         verbosity: 2
 
+    - name: ansible_play_hosts
+      ansible.builtin.debug:
+        var: ansible_play_hosts
+        verbosity: 2
 
-    - name: Sets the root password
+
+
+#    - name: Sets the root password
+#      mysql_user:
+#        name: root
+#       password: "{{ mysql_root_password }}"
+#        host: "{{ ansible_play_hosts  }}"
+#        login_unix_socket: /var/run/mysqld/mysqld.sock
+#      when: dir_exists.stat.exists == False
+
+    - name: Update mysql password for superuser 
       mysql_user:
+        # Update the superuser to have all grants and a password
         name: root
         password: "{{ mysql_root_password }}"
         host: "{{ ansible_play_hosts  }}"
         login_unix_socket: /var/run/mysqld/mysqld.sock
-      when: dir_exists.stat.exists == False
+        # priv: "*.*:ALL,GRANT"
+        ### Login *as root* to perform this change, even though you might
+        ### be altering the root user itself
+        # login_user: root
+        # login_password: ""
+        # login_host: "{{ ansible_play_hosts  }}"
+        # As a good measure,have ansible check whether an implicit login
+        # is possible first
+        # check_implicit_admin: yes
+
+    - name: Create system-wide mysql configuration file
+      template:
+        src: system_wide_mysql.cnf.j2
+        dest: /etc/my.cnf
+
 
     - name: Removes all anonymous user accounts
       mysql_user:
