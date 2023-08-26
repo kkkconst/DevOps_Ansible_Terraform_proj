@@ -1,9 +1,9 @@
 ---
 ### MySQL Configuration
-#    - name: Define to Run some commands in MySQL or not
-#      stat:
-#        path: "/var/www/{{ http_host }}"
-#      register: dir_exists
+    - name: Define to Run some commands in MySQL or not
+      stat:
+        path: "/etc/my.cnf"
+      register: file_exists
 
     - name: Print mysql_root_password
       ansible.builtin.debug:
@@ -16,35 +16,18 @@
         verbosity: 2
 
 
-
-#    - name: Sets the root password
-#      mysql_user:
-#        name: root
-#       password: "{{ mysql_root_password }}"
-#        host: "{{ ansible_play_hosts  }}"
-#        login_unix_socket: /var/run/mysqld/mysqld.sock
-#      when: dir_exists.stat.exists == False
-
-    - name: Update mysql password for superuser 
+    - name: Define to Run some commands in MySQL or not 
       mysql_user:
         # Update the superuser to have all grants and a password
         name: root
         password: "{{ mysql_root_password }}"
         host: "{{ ansible_play_hosts  }}"
         login_unix_socket: /var/run/mysqld/mysqld.sock
-        # priv: "*.*:ALL,GRANT"
-        ### Login *as root* to perform this change, even though you might
-        ### be altering the root user itself
-        # login_user: root
-        # login_password: ""
-        # login_host: "{{ ansible_play_hosts  }}"
-        # As a good measure,have ansible check whether an implicit login
-        # is possible first
-        # check_implicit_admin: yes
+      when: file_exists.stat.exists == False
 
     - name: Create system-wide mysql configuration file
       template:
-        src: system_wide_mysql.cnf.j2
+        src: ./files/system_wide_mysql.cnf.j2
         dest: /etc/my.cnf
 
 
@@ -55,7 +38,7 @@
         state: absent
         login_user: root
         login_password: "{{ mysql_root_password }}"
-      when: dir_exists.stat.exists == False
+      when: file_exists.stat.exists == False
 
     - name: Removes the MySQL test database
       mysql_db:
@@ -63,12 +46,7 @@
         state: absent
         login_user: root
         login_password: "{{ mysql_root_password }}"
-      when: dir_exists.stat.exists == False
-
-    - name: Print mysql_root_password
-      ansible.builtin.debug:
-        var: mysql_root_password
-        verbosity: 2
+      when: file_exists.stat.exists == False
 
     - name: Creates database for WordPress
       mysql_db:
@@ -76,7 +54,7 @@
         state: present
         login_user: root
         login_password: "{{ mysql_root_password }}"
-      when: dir_exists.stat.exists == False
+      when: file_exists.stat.exists == False
 
     - name: Create a new database user and password
       mysql_user:
@@ -85,5 +63,5 @@
         password: "{{ mysql_root_password }}"
         priv: '{{ mysql_db }}.*:ALL'
         state: present
-      when: dir_exists.stat.exists == False
+      when: file_exists.stat.exists == False
 

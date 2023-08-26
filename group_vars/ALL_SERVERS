@@ -1,8 +1,8 @@
 ---
 mysql_root_password: "mysql_root_password"
 app_user: "sammy"
-http_host: "fifth7_domain"
-http_conf: "fifth7_domain.conf"
+http_host: "my_domain"
+http_conf: "my_domain.conf"
 http_port: "80"
 disable_default: true
 mysql_db: wordpress_db

@@ -1,16 +1,11 @@
 ---
 ### Apache Configuration
-    - name: define to create a root dir and remove everething in the dir or not
-      stat:
-        path: "/var/www/{{ http_host }}"
-      register: dir_exists
 
     - name: Create document root
       file:
         path: "/var/www/{{ http_host }}"
         state: directory
         mode: '0755'
-      when: dir_exists.stat.exists == False
 
     - name: Set up Apache virtualhost
       template:
